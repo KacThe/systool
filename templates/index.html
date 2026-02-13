@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Remote Command Tool</title>
+    <style>
+        :root {
+            --bg: #0b0b12;
+            --panel: #141426;
+            --text: #e7e7f2;
+            --muted: #9b9bb2;
+            --border: #2a2a45;
+            --input: #101022;
+            --accent: #5b2a86;
+            --accent-2: #9a7bd6;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 24px;
+            background: radial-gradient(1200px 800px at 10% 10%, #18162b 0%, var(--bg) 55%);
+            color: var(--text);
+        }
+        .brand {
+            margin: 0 0 12px 0;
+            font-size: 36px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(110deg, #2a0b4f 0%, #6b38b7 35%, #efe7ff 50%, #6b38b7 65%, #2a0b4f 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 200% auto;
+            animation: shine 2.5s linear infinite;
+        }
+        @keyframes shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        .row { margin-bottom: 12px; }
+        .row label { display: inline-block; width: 110px; }
+        .hint { color: var(--muted); margin-left: 12px; font-size: 12px; }
+        input {
+            padding: 8px 10px;
+            width: 240px;
+            background: var(--input);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        input::placeholder { color: var(--muted); }
+        button {
+            padding: 8px 12px;
+            margin-right: 8px;
+            background: linear-gradient(180deg, #2a1442 0%, #1a0f2a 100%);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover { border-color: var(--accent-2); }
+        .output {
+            margin-top: 16px;
+            background: var(--panel);
+            padding: 12px;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="brand">KACPER HUB</h1>
+    <h2>Remote Commands</h2>
+
+    <form method="post" id="cmd-form">
+        <div class="row">
+            <label>IP</label>
+            <input type="text" name="ip" placeholder="10.17.10.220" value="{{ ip }}" required />
+            <span class="hint">IP maszyny, na której wykonasz komendę</span>
+        </div>
+        <div class="row">
+            <label>User</label>
+            <input type="text" name="username" placeholder="serwis3c" value="{{ username }}" required />
+            <span class="hint">Użytkownik do logowania na maszynę</span>
+        </div>
+        <div class="row">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="password" value="{{ password }}" required />
+            <span class="hint">Hasło do maszyny</span>
+        </div>
+        <div class="row" id="ping-row" style="display:none;">
+            <label>Ping to</label>
+            <input type="text" name="ping_target" placeholder="8.8.8.8" value="{{ ping_target }}" />
+        </div>
+        <div class="row" id="route-get-row" style="display:none;">
+            <label>Route get</label>
+            <input type="text" name="route_get_target" placeholder="1.1.1.1" value="{{ route_get_target }}" />
+        </div>
+        <input type="hidden" name="action" id="action" value="{{ last_action }}">
+        <div class="row">
+            <button type="button" id="ping-btn">Ping</button>
+            <button type="button" id="route-btn">IP route</button>
+            <button type="button" id="route-get-btn">IP route get</button>
+            <button type="button" id="docker-btn">Docker ps</button>
+        </div>
+    </form>
+
+    <pre class="output">{{ result }}</pre>
+    <script>
+        const form = document.getElementById("cmd-form");
+        const action = document.getElementById("action");
+        const pingRow = document.getElementById("ping-row");
+        const routeGetRow = document.getElementById("route-get-row");
+        const pingBtn = document.getElementById("ping-btn");
+        const routeBtn = document.getElementById("route-btn");
+        const routeGetBtn = document.getElementById("route-get-btn");
+        const dockerBtn = document.getElementById("docker-btn");
+        const lastAction = "{{ last_action }}";
+
+        function showPingRow(show) {
+            pingRow.style.display = show ? "block" : "none";
+        }
+
+        function showRouteGetRow(show) {
+            routeGetRow.style.display = show ? "block" : "none";
+        }
+
+        if (lastAction === "ping") {
+            showPingRow(true);
+        }
+        if (lastAction === "ip_route_get") {
+            showRouteGetRow(true);
+        }
+
+        pingBtn.addEventListener("click", () => {
+            action.value = "ping";
+            showRouteGetRow(false);
+            if (pingRow.style.display === "none") {
+                showPingRow(true);
+                const input = pingRow.querySelector("input");
+                if (input) {
+                    input.focus();
+                }
+                return;
+            }
+            form.requestSubmit();
+        });
+
+        routeBtn.addEventListener("click", () => {
+            action.value = "ip_route";
+            showPingRow(false);
+            showRouteGetRow(false);
+            form.requestSubmit();
+        });
+
+        routeGetBtn.addEventListener("click", () => {
+            action.value = "ip_route_get";
+            showPingRow(false);
+            if (routeGetRow.style.display === "none") {
+                showRouteGetRow(true);
+                const input = routeGetRow.querySelector("input");
+                if (input) {
+                    input.focus();
+                }
+                return;
+            }
+            form.requestSubmit();
+        });
+
+        dockerBtn.addEventListener("click", () => {
+            action.value = "docker_ps";
+            showPingRow(false);
+            showRouteGetRow(false);
+            form.requestSubmit();
+        });
+    </script>
+</body>
+</html>

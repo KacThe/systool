@@ -1,0 +1,9 @@
+services:
+  app:
+    container_name: kacper-hub
+    image: py_app:latest
+    ports:
+      - "80:8000"
+    volumes:
+    - .:/app
+    command: uvicorn main:app --reload --host 0.0.0.0
