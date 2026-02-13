@@ -52,8 +52,23 @@
             border-radius: 6px;
             cursor: pointer;
         }
-        button:hover { border-color: var(--accent-2); }
-        .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+button:hover { border-color: var(--accent-2); }
+.actions button.action-selected,
+.actions .split-main.action-selected {
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 1px rgba(154, 123, 214, 0.35) inset;
+    background: linear-gradient(180deg, #352053 0%, #23133a 100%);
+}
+.menu-item.menu-item-selected {
+    border-color: var(--accent-2);
+    background: #1d1d36;
+}
+#run-btn {
+    background: linear-gradient(180deg, #5b2a86 0%, #3f1f62 100%);
+    border-color: #7f59ba;
+    font-weight: 700;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
         .actions button { margin-right: 0; }
         .split {
             position: relative;
