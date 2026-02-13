@@ -1,0 +1,150 @@
+:root {
+            --bg: #0b0b12;
+            --panel: #141426;
+            --text: #e7e7f2;
+            --muted: #9b9bb2;
+            --border: #2a2a45;
+            --input: #101022;
+            --accent: #5b2a86;
+            --accent-2: #9a7bd6;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 24px;
+            background: radial-gradient(1200px 800px at 10% 10%, #18162b 0%, var(--bg) 55%);
+            color: var(--text);
+        }
+        .brand {
+            margin: 0 0 12px 0;
+            font-size: 36px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(110deg, #2a0b4f 0%, #6b38b7 35%, #efe7ff 50%, #6b38b7 65%, #2a0b4f 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 200% auto;
+            animation: shine 2.5s linear infinite;
+        }
+        @keyframes shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        .row { margin-bottom: 12px; }
+        .row label { display: inline-block; width: 110px; }
+        .inline-btn { margin-left: 8px; }
+        .inline-select { width: 220px; margin-left: 8px; }
+        input, select {
+            padding: 8px 10px;
+            width: 240px;
+            background: var(--input);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        input::placeholder { color: var(--muted); }
+        button {
+            padding: 8px 12px;
+            margin-right: 8px;
+            background: linear-gradient(180deg, #2a1442 0%, #1a0f2a 100%);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover { border-color: var(--accent-2); }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .actions button { margin-right: 0; }
+        .split {
+            position: relative;
+            display: inline-flex;
+            align-items: stretch;
+        }
+        .split-main {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-right: 0;
+        }
+        .split-toggle {
+            width: 36px;
+            padding: 8px 0;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            margin-right: 0;
+        }
+        .split-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            z-index: 10;
+            min-width: 210px;
+            background: #16162a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+            padding: 6px;
+        }
+        .split-menu[hidden] { display: none; }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            text-align: left;
+            padding: 8px 10px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+        }
+        .menu-item:hover {
+            border-color: var(--accent-2);
+            background: #1d1d36;
+        }
+        .menu-help {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin-left: 10px;
+            border-radius: 50%;
+            border: 1px solid var(--accent-2);
+            color: var(--accent-2);
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .output {
+            margin-top: 16px;
+            background: var(--panel);
+            padding: 12px;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+        }
+        .output-list {
+            margin-top: 16px;
+            display: grid;
+            gap: 14px;
+        }
+        .output-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .output-title {
+            padding: 10px 12px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #191933 0%, #121226 100%);
+        }
+        .output-body {
+            margin: 0;
+            padding: 12px;
+            color: var(--text);
+            white-space: pre;
+            overflow-x: auto;
+        }

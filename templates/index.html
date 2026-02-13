@@ -2,183 +2,75 @@
 <html>
 <head>
     <title>Remote Command Tool</title>
-    <style>
-        :root {
-            --bg: #0b0b12;
-            --panel: #141426;
-            --text: #e7e7f2;
-            --muted: #9b9bb2;
-            --border: #2a2a45;
-            --input: #101022;
-            --accent: #5b2a86;
-            --accent-2: #9a7bd6;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 24px;
-            background: radial-gradient(1200px 800px at 10% 10%, #18162b 0%, var(--bg) 55%);
-            color: var(--text);
-        }
-        .brand {
-            margin: 0 0 12px 0;
-            font-size: 36px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            background: linear-gradient(110deg, #2a0b4f 0%, #6b38b7 35%, #efe7ff 50%, #6b38b7 65%, #2a0b4f 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            background-size: 200% auto;
-            animation: shine 2.5s linear infinite;
-        }
-        @keyframes shine {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-        .row { margin-bottom: 12px; }
-        .row label { display: inline-block; width: 110px; }
-        .inline-btn { margin-left: 8px; }
-        input {
-            padding: 8px 10px;
-            width: 240px;
-            background: var(--input);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-        input::placeholder { color: var(--muted); }
-        button {
-            padding: 8px 12px;
-            margin-right: 8px;
-            background: linear-gradient(180deg, #2a1442 0%, #1a0f2a 100%);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        button:hover { border-color: var(--accent-2); }
-        .actions { display: flex; flex-wrap: wrap; gap: 8px; }
-        .actions button { margin-right: 0; }
-        .split {
-            position: relative;
-            display: inline-flex;
-            align-items: stretch;
-        }
-        .split-main {
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            margin-right: 0;
-        }
-        .split-toggle {
-            width: 36px;
-            padding: 8px 0;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            margin-right: 0;
-        }
-        .split-menu {
-            position: absolute;
-            top: calc(100% + 6px);
-            right: 0;
-            z-index: 10;
-            min-width: 210px;
-            background: #16162a;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-            padding: 6px;
-        }
-        .split-menu[hidden] { display: none; }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            text-align: left;
-            padding: 8px 10px;
-            border: 1px solid transparent;
-            border-radius: 6px;
-            background: transparent;
-            color: var(--text);
-            cursor: pointer;
-        }
-        .menu-item:hover {
-            border-color: var(--accent-2);
-            background: #1d1d36;
-        }
-        .menu-help {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            height: 16px;
-            margin-left: 10px;
-            border-radius: 50%;
-            border: 1px solid var(--accent-2);
-            color: var(--accent-2);
-            font-size: 11px;
-            font-weight: 700;
-            line-height: 1;
-        }
-        .output {
-            margin-top: 16px;
-            background: var(--panel);
-            padding: 12px;
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 8px;
-        }
-        .output-list {
-            margin-top: 16px;
-            display: grid;
-            gap: 14px;
-        }
-        .output-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .output-title {
-            padding: 10px 12px;
-            font-weight: 700;
-            border-bottom: 1px solid var(--border);
-            background: linear-gradient(180deg, #191933 0%, #121226 100%);
-        }
-        .output-body {
-            margin: 0;
-            padding: 12px;
-            color: var(--text);
-            white-space: pre;
-            overflow-x: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1 class="brand">KACPER HUB</h1>
     <h2>Remote Commands</h2>
+    {% set service_presets = [
+        "haproxy",
+        "grafana-server",
+        "zabbix-agent2",
+        "docker",
+        "postgres@15",
+        "postgresql@15-main",
+        "apache2",
+        "nginx",
+        "kibana",
+        "elasticsearch",
+        "influxdb",
+        "pgbouncer",
+        "jenkins"
+    ] %}
+    {% set fping_presets = [
+        ("10.17.10.1", "10.17.10.254"),
+        ("10.17.110.1", "10.17.110.254"),
+        ("172.17.3.1", "172.17.3.254"),
+        ("172.17.4.1", "172.17.4.254"),
+        ("172.16.3.1", "172.16.3.254"),
+        ("172.16.4.1", "172.16.4.254")
+    ] %}
+    {% set extra_ips = [ip2, ip3, ip4, ip5, ip6, ip7, ip8, ip9, ip10] %}
 
     <form method="post" id="cmd-form">
         <div class="row">
             <label>IP</label>
             <input type="text" name="ip" placeholder="IP of machine where command will run" value="{{ ip }}" required id="ip1-input" />
-            <button type="button" id="dual-toggle-btn" class="inline-btn">2 machines at once</button>
+            <select id="machine-count-select" class="inline-select" name="machine_count">
+                {% for n in range(1, 11) %}
+                <option value="{{ n }}" {% if machine_count == n %}selected{% endif %}>{{ n }} machine{% if n > 1 %}s{% endif %}</option>
+                {% endfor %}
+            </select>
         </div>
-        <div class="row" id="ip2-row" style="display:none;">
-            <label>IP #2</label>
-            <input type="text" name="ip2" id="ip2-input" placeholder="Second machine IP for parallel command" value="{{ ip2 }}" />
+        {% for addr in extra_ips %}
+        {% set ip_idx = loop.index + 1 %}
+        <div class="row machine-ip-row" id="ip{{ ip_idx }}-row" style="display:none;">
+            <label>IP #{{ ip_idx }}</label>
+            <input type="text" name="ip{{ ip_idx }}" id="ip{{ ip_idx }}-input" placeholder="Machine IP #{{ ip_idx }}" value="{{ addr }}" />
         </div>
+        {% endfor %}
         <div class="row">
             <label>User</label>
-            <input type="text" name="username" placeholder="serwis3c" value="{{ username }}" required />
+            <input type="text" name="username" id="username-input" placeholder="admin" value="{{ username }}" required />
         </div>
         <div class="row">
             <label>Password</label>
-            <input type="password" name="password" placeholder="password" value="{{ password }}" required />
+            <input type="password" name="password" id="password-input" placeholder="password" value="{{ password }}" required />
         </div>
         <div class="row" id="ping-row" style="display:none;">
             <label>Ping to</label>
             <input type="text" name="ping_target" placeholder="8.8.8.8" value="{{ ping_target }}" />
+        </div>
+        <div class="row" id="fping-row" style="display:none;">
+            <label>fping range</label>
+            <input type="text" name="fping_start_ip" id="fping-start-input" placeholder="10.17.10.1" value="{{ fping_start_ip }}" />
+            <input type="text" name="fping_end_ip" id="fping-end-input" class="inline-select" placeholder="10.17.10.254" value="{{ fping_end_ip }}" />
+            <select id="fping-range-preset" class="inline-select">
+                <option value="">Choose range preset...</option>
+                {% for start_ip, end_ip in fping_presets %}
+                <option value="{{ start_ip }}|{{ end_ip }}">{{ start_ip }} - {{ end_ip }}</option>
+                {% endfor %}
+            </select>
         </div>
         <div class="row" id="route-get-row" style="display:none;">
             <label>Route get</label>
@@ -198,26 +90,23 @@
         </div>
         <div class="row" id="systemctl-row" style="display:none;">
             <label>Service</label>
-            <input type="text" name="service_name" id="service-name-input" placeholder="service name" list="service-suggestions" value="{{ service_name }}" />
-            <datalist id="service-suggestions">
-                <option value="haproxy"></option>
-                <option value="grafana-server"></option>
-                <option value="zabbix-agent2"></option>
-                <option value="docker"></option>
-                <option value="postgres@15"></option>
-                <option value="postgresql@15-main"></option>
-                <option value="apache2"></option>
-                <option value="nginx"></option>
-                <option value="kibana"></option>
-                <option value="elasticsearch"></option>
-                <option value="influxdb"></option>
-                <option value="redis-server"></option>
-            </datalist>
+            <input type="text" name="service_name" id="service-name-input" placeholder="service name" value="{{ service_name }}" />
+            <select id="service-preset" class="inline-select">
+                <option value="">Choose preset service...</option>
+                {% for svc in service_presets %}
+                <option value="{{ svc }}">{{ svc }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="row" id="custom-row" style="display:none;">
+            <label>Command</label>
+            <input type="text" name="custom_command" id="custom-command-input" placeholder="custom shell command" value="{{ custom_command }}" />
         </div>
         <input type="hidden" name="action" id="action" value="{{ last_action }}">
-        <input type="hidden" name="dual_mode" id="dual-mode" value="{{ '1' if dual_mode else '0' }}">
         <div class="row actions">
+            <button type="button" id="custom-btn">Custom</button>
             <button type="button" id="ping-btn">Ping</button>
+            <button type="button" id="fping-btn">fping scan</button>
             <button type="button" id="route-btn">IP route</button>
             <button type="button" id="route-get-btn">IP route get</button>
             <div class="split" id="curl-split">
@@ -274,352 +163,6 @@
     {% else %}
     <pre class="output">{{ result }}</pre>
     {% endif %}
-    <script>
-        const form = document.getElementById("cmd-form");
-        const action = document.getElementById("action");
-        const dualModeInput = document.getElementById("dual-mode");
-        const dualToggleBtn = document.getElementById("dual-toggle-btn");
-        const ip2Row = document.getElementById("ip2-row");
-        const ip2Input = document.getElementById("ip2-input");
-        const pingRow = document.getElementById("ping-row");
-        const routeGetRow = document.getElementById("route-get-row");
-        const curlRow = document.getElementById("curl-row");
-        const curlMethodRow = document.getElementById("curl-method-row");
-        const dockerLogsRow = document.getElementById("docker-logs-row");
-        const systemctlRow = document.getElementById("systemctl-row");
-        const curlTargetInput = document.getElementById("curl-target-input");
-        const curlMethodInput = document.getElementById("curl-method-input");
-        const dockerContainerInput = document.getElementById("docker-container-input");
-        const serviceNameInput = document.getElementById("service-name-input");
-        const pingBtn = document.getElementById("ping-btn");
-        const routeBtn = document.getElementById("route-btn");
-        const routeGetBtn = document.getElementById("route-get-btn");
-        const curlBtn = document.getElementById("curl-btn");
-        const curlToggleBtn = document.getElementById("curl-toggle-btn");
-        const curlMenu = document.getElementById("curl-menu");
-        const dockerToggleBtn = document.getElementById("docker-toggle-btn");
-        const dockerMenu = document.getElementById("docker-menu");
-        const dockerBtn = document.getElementById("docker-btn");
-        const ssBtn = document.getElementById("ss-btn");
-        const ssToggleBtn = document.getElementById("ss-toggle-btn");
-        const ssMenu = document.getElementById("ss-menu");
-        const dfBtn = document.getElementById("df-btn");
-        const uptimeBtn = document.getElementById("uptime-btn");
-        const duVarBtn = document.getElementById("du-var-btn");
-        const systemctlBtn = document.getElementById("systemctl-btn");
-        const systemctlToggleBtn = document.getElementById("systemctl-toggle-btn");
-        const systemctlMenu = document.getElementById("systemctl-menu");
-        const lastAction = "{{ last_action }}";
-        let dualModeEnabled = "{{ '1' if dual_mode else '0' }}" === "1";
-        let currentCurlAction = "curl_i";
-        let currentDockerAction = "docker_ps";
-        let currentSsAction = "ss_tulpn";
-        let currentSystemctlAction = "systemctl_status";
-
-        function getCurlLabel(selected) {
-            if (selected === "curl_i") return "curl -I";
-            if (selected === "curl_ss") return "curl -sS";
-            if (selected === "curl_plain") return "curl";
-            return "curl -X";
-        }
-
-        function getDockerLabel(selected) {
-            if (selected === "docker_stats") return "Docker stats";
-            if (selected === "docker_logs") return "Docker logs";
-            return "Docker ps";
-        }
-
-        function getSsLabel(selected) {
-            if (selected === "ss_ant") return "ss -ant";
-            return "ss -tulpn";
-        }
-
-        function getSystemctlLabel(selected) {
-            if (selected === "systemctl_restart") return "systemctl restart";
-            if (selected === "systemctl_stop") return "systemctl stop";
-            return "systemctl status";
-        }
-
-        function showPingRow(show) {
-            pingRow.style.display = show ? "block" : "none";
-        }
-
-        function showRouteGetRow(show) {
-            routeGetRow.style.display = show ? "block" : "none";
-        }
-
-        function showCurlRow(show) {
-            curlRow.style.display = show ? "block" : "none";
-            curlTargetInput.required = show;
-        }
-
-        function showCurlMethodRow(show) {
-            curlMethodRow.style.display = show ? "block" : "none";
-            curlMethodInput.required = show;
-        }
-
-        function showDockerLogsRow(show) {
-            dockerLogsRow.style.display = show ? "block" : "none";
-            dockerContainerInput.required = show;
-        }
-
-        function showSystemctlRow(show) {
-            systemctlRow.style.display = show ? "block" : "none";
-            serviceNameInput.required = show;
-        }
-
-        function hideAllOptionalRows() {
-            showPingRow(false);
-            showRouteGetRow(false);
-            showCurlRow(false);
-            showCurlMethodRow(false);
-            showDockerLogsRow(false);
-            showSystemctlRow(false);
-        }
-
-        function setDualMode(enabled) {
-            dualModeEnabled = enabled;
-            dualModeInput.value = enabled ? "1" : "0";
-            ip2Row.style.display = enabled ? "block" : "none";
-            ip2Input.required = enabled;
-            dualToggleBtn.textContent = enabled ? "1 machine" : "2 machines at once";
-        }
-
-        if (lastAction === "ping") {
-            showPingRow(true);
-        }
-        if (lastAction === "ip_route_get") {
-            showRouteGetRow(true);
-        }
-        if (lastAction === "curl_i" || lastAction === "curl_ss" || lastAction === "curl_plain" || lastAction === "curl_x") {
-            showCurlRow(true);
-            currentCurlAction = lastAction;
-            if (lastAction === "curl_x") {
-                showCurlMethodRow(true);
-            }
-        }
-        if (lastAction === "docker_ps" || lastAction === "docker_stats" || lastAction === "docker_logs") {
-            currentDockerAction = lastAction;
-            if (lastAction === "docker_logs") {
-                showDockerLogsRow(true);
-            }
-        }
-        if (lastAction === "ss_tulpn" || lastAction === "ss_ant") {
-            currentSsAction = lastAction;
-        }
-        if (lastAction === "systemctl_status" || lastAction === "systemctl_restart" || lastAction === "systemctl_stop") {
-            currentSystemctlAction = lastAction;
-            showSystemctlRow(true);
-        }
-        curlBtn.textContent = getCurlLabel(currentCurlAction);
-        dockerBtn.textContent = getDockerLabel(currentDockerAction);
-        ssBtn.textContent = getSsLabel(currentSsAction);
-        systemctlBtn.textContent = getSystemctlLabel(currentSystemctlAction);
-        setDualMode(dualModeEnabled);
-
-        dualToggleBtn.addEventListener("click", () => {
-            setDualMode(!dualModeEnabled);
-            if (dualModeEnabled) {
-                ip2Input.focus();
-            }
-        });
-
-        pingBtn.addEventListener("click", () => {
-            action.value = "ping";
-            hideAllOptionalRows();
-            if (pingRow.style.display === "none") {
-                showPingRow(true);
-                const input = pingRow.querySelector("input");
-                if (input) {
-                    input.focus();
-                }
-                return;
-            }
-            form.requestSubmit();
-        });
-
-        routeBtn.addEventListener("click", () => {
-            action.value = "ip_route";
-            hideAllOptionalRows();
-            form.requestSubmit();
-        });
-
-        routeGetBtn.addEventListener("click", () => {
-            action.value = "ip_route_get";
-            hideAllOptionalRows();
-            if (routeGetRow.style.display === "none") {
-                showRouteGetRow(true);
-                const input = routeGetRow.querySelector("input");
-                if (input) {
-                    input.focus();
-                }
-                return;
-            }
-            form.requestSubmit();
-        });
-
-        curlBtn.addEventListener("click", () => {
-            action.value = currentCurlAction;
-            hideAllOptionalRows();
-            showCurlRow(true);
-            if (currentCurlAction === "curl_x") {
-                showCurlMethodRow(true);
-            }
-            form.requestSubmit();
-        });
-
-        curlToggleBtn.addEventListener("click", (event) => {
-            event.stopPropagation();
-            curlMenu.hidden = !curlMenu.hidden;
-            dockerMenu.hidden = true;
-            ssMenu.hidden = true;
-            systemctlMenu.hidden = true;
-        });
-
-        curlMenu.querySelectorAll(".menu-item").forEach((item) => {
-            item.addEventListener("click", () => {
-                const selected = item.dataset.action;
-                currentCurlAction = selected;
-                action.value = selected;
-                curlBtn.textContent = getCurlLabel(selected);
-                curlMenu.hidden = true;
-                hideAllOptionalRows();
-                showCurlRow(true);
-                if (selected === "curl_x") {
-                    showCurlMethodRow(true);
-                    curlMethodInput.focus();
-                } else {
-                    curlTargetInput.focus();
-                }
-            });
-        });
-
-        dockerBtn.addEventListener("click", () => {
-            action.value = currentDockerAction;
-            hideAllOptionalRows();
-            if (currentDockerAction === "docker_logs") {
-                showDockerLogsRow(true);
-            }
-            form.requestSubmit();
-        });
-
-        dockerToggleBtn.addEventListener("click", (event) => {
-            event.stopPropagation();
-            dockerMenu.hidden = !dockerMenu.hidden;
-            curlMenu.hidden = true;
-            ssMenu.hidden = true;
-            systemctlMenu.hidden = true;
-        });
-
-        dockerMenu.querySelectorAll(".menu-item").forEach((item) => {
-            item.addEventListener("click", () => {
-                const selected = item.dataset.action;
-                currentDockerAction = selected;
-                action.value = selected;
-                dockerBtn.textContent = getDockerLabel(selected);
-                dockerMenu.hidden = true;
-                hideAllOptionalRows();
-                if (selected === "docker_logs") {
-                    showDockerLogsRow(true);
-                    dockerContainerInput.focus();
-                    return;
-                }
-                form.requestSubmit();
-            });
-        });
-
-        ssBtn.addEventListener("click", () => {
-            action.value = currentSsAction;
-            hideAllOptionalRows();
-            form.requestSubmit();
-        });
-
-        ssToggleBtn.addEventListener("click", (event) => {
-            event.stopPropagation();
-            ssMenu.hidden = !ssMenu.hidden;
-            curlMenu.hidden = true;
-            dockerMenu.hidden = true;
-            systemctlMenu.hidden = true;
-        });
-
-        ssMenu.querySelectorAll(".menu-item").forEach((item) => {
-            item.addEventListener("click", () => {
-                const selected = item.dataset.action;
-                currentSsAction = selected;
-                action.value = selected;
-                ssBtn.textContent = getSsLabel(selected);
-                ssMenu.hidden = true;
-                hideAllOptionalRows();
-                form.requestSubmit();
-            });
-        });
-
-        dfBtn.addEventListener("click", () => {
-            action.value = "df_h";
-            hideAllOptionalRows();
-            form.requestSubmit();
-        });
-
-        uptimeBtn.addEventListener("click", () => {
-            action.value = "uptime";
-            hideAllOptionalRows();
-            form.requestSubmit();
-        });
-
-        duVarBtn.addEventListener("click", () => {
-            action.value = "du_var_top20";
-            hideAllOptionalRows();
-            form.requestSubmit();
-        });
-
-        systemctlBtn.addEventListener("click", () => {
-            action.value = currentSystemctlAction;
-            const wasHidden = systemctlRow.style.display === "none";
-            hideAllOptionalRows();
-            showSystemctlRow(true);
-            if (wasHidden && !serviceNameInput.value.trim()) {
-                serviceNameInput.focus();
-                return;
-            }
-            form.requestSubmit();
-        });
-
-        systemctlToggleBtn.addEventListener("click", (event) => {
-            event.stopPropagation();
-            systemctlMenu.hidden = !systemctlMenu.hidden;
-            curlMenu.hidden = true;
-            dockerMenu.hidden = true;
-            ssMenu.hidden = true;
-        });
-
-        systemctlMenu.querySelectorAll(".menu-item").forEach((item) => {
-            item.addEventListener("click", () => {
-                const selected = item.dataset.action;
-                currentSystemctlAction = selected;
-                action.value = selected;
-                systemctlBtn.textContent = getSystemctlLabel(selected);
-                systemctlMenu.hidden = true;
-                hideAllOptionalRows();
-                showSystemctlRow(true);
-                serviceNameInput.focus();
-            });
-        });
-
-        serviceNameInput.addEventListener("keydown", (event) => {
-            if (event.key !== "Enter") {
-                return;
-            }
-            event.preventDefault();
-            action.value = currentSystemctlAction;
-            form.requestSubmit();
-        });
-
-        document.addEventListener("click", () => {
-            curlMenu.hidden = true;
-            dockerMenu.hidden = true;
-            ssMenu.hidden = true;
-            systemctlMenu.hidden = true;
-        });
-    </script>
+    <script src="/static/app.js" defer></script>
 </body>
 </html>
