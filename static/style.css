@@ -42,6 +42,11 @@
             border: 1px solid var(--border);
             border-radius: 6px;
         }
+        #custom-command-input {
+            width: min(920px, calc(100vw - 220px));
+            max-width: 100%;
+            font-family: Consolas, "Courier New", monospace;
+        }
         input::placeholder { color: var(--muted); }
         button {
             padding: 8px 12px;
