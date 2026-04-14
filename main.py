@@ -164,8 +164,9 @@ def _format_fping_output(raw: str, start_ip: str, end_ip: str) -> str:
 @app.get("/", response_class=HTMLResponse)
 def form(request: Request):
     return templates.TemplateResponse(
-        "index.html",
-        {
+        request=request,
+        name="index.html",
+        context={
             "request": request,
             "result": "",
             "result_blocks": [],
@@ -498,8 +499,9 @@ def run_command(
                 )
 
     return templates.TemplateResponse(
-        "index.html",
-        {
+        request=request,
+        name="index.html",
+        context={
             "request": request,
             "result": output,
             "result_blocks": result_blocks,

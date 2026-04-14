@@ -1,7 +1,7 @@
 services:
   app:
-    container_name: kacper-hub
-    image: kacper-hub:latest
+    container_name: systool
+    image: systool:latest
     ports:
       - "6767:8000"
     volumes:
